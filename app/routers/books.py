@@ -70,3 +70,15 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
     db.delete(book)
     db.commit()
 
+
+@router.get("/author/{author_id}", response_model=list[BookResponse])
+def list_books_by_author(author_id: int, db: Session = Depends(get_db)):
+    ensure_author(db, author_id)
+
+    consulta = select(Book).where(Book.author_id == author_id)
+    consulta = consulta.order_by(Book.id)
+
+    livros = db.scalars(consulta).all()
+
+    return livros
+
